@@ -1,0 +1,24 @@
+# git-branches
+
+This oh-my-zsh plugin lets you easily switch local or remote branches and delete local branches!
+
+## How to install
+### Prerequisites
+1. zsh
+2. oh-my-zsh
+
+### Installation
+Open terminal and paste the following lines. This will clone the repository to the right location, add `git-branches` to the plugins located in ~/.zshrc and restart your shell.
+
+```
+git clone https://github.com/Schroefdop/git-branches.git ~/.oh-my-zsh/custom/plugins/git-branches
+while read line; do; if [[ $line == plugins* ]]; then; sed -i -e 's/plugins=(/plugins=(git-branches /g' ~/.zshrc; fi;  done < ~/.zshrc
+exec zsh
+```
+
+## How to use
+
+After you installed the plugin and restarted your shell there are three commands you can use:
+1. `gco` (`git checkout`) - This will list all your local branches and an option to switch using a number
+2. `gcor` (`git checkout -r`) - This will list all your remote branches and an option to switch using a number
+3. `gbd` (`git branch -d`) - This will list all your local branches and the option to delete a branch. Confirmation is asked before deletion.
