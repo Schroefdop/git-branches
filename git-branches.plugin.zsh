@@ -25,6 +25,10 @@ gcor() {
 }
 
 _listBranches() {
+    local NOCOLOR='\033[0m'
+    local RED='\033[0;31m'
+    local GREEN='\033[0;32m'
+
     branchesFile=$TMPDIR'branches'
     trap "{ rm -f $branchesFile; }" EXIT
 
