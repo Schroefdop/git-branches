@@ -2,6 +2,8 @@
 
 Are you tired of copy pasting long branch names to just check it out? Me too! That's why I made this oh-my-zsh plugin. This plugin lists all the local/remote branches you have prepended with a number and you just have to type the corresponding number to switch to the branch! 🕺🏻
 
+![](http://www.giphy.com/gifs/J4yVzLSG0hVbDaUyEB)
+
 ## How to install
 ### Prerequisites
 1. zsh
