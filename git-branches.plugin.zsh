@@ -8,6 +8,14 @@
 # ----------------------
 _INPUT=
 
+gm() {
+    if [ -z "$1" ]; then
+        _listBranches "merge"
+    elif; then
+        git merge --no-ff $1
+    fi
+}
+
 gco() {
     if [ -z "$1" ]; then
         _listBranches "checkout"
@@ -61,6 +69,9 @@ _listBranches() {
     branch=$(head -$_INPUT $branchesFile | tail -1 | awk '{$1=$1};1')
 
     case $1 in
+    "merge")
+        git merge --no-ff $branch
+    ;;
     "remote checkout")
         git checkout -t $branch
         ;;
