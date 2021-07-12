@@ -78,9 +78,6 @@ _checkIfKeywordExists() {
     _KEYWORD=$1
     _ACTION=$2
 
-    echo "Keyword is $_KEYWORD"
-    echo "Action is $_ACTION"
-
     grepBranches=$TMPDIR'grepBranches'
     trap "{ rm -f $grepBranches; }" EXIT
 
@@ -170,8 +167,6 @@ _validateInput() {
 _handleActionForBranch() {   
     _ACTION=$1
     _BRANCH=$2
-
-    echo "_handle $_ACTION on $_BRANCH"
 
     case $_ACTION in
     "merge") git merge --no-ff $_BRANCH ;;
