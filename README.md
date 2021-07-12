@@ -22,12 +22,12 @@ exec zsh
 
 After you installed the plugin and restarted your shell there are three commands you can use:
 
-**gco**
+**gco**  
 Will list all local available branches for checkout. Choose a number from the list to checkout that branch.
-**gco \<branchname>**
+**gco \<branchname>**  
 This command will immediately checkout the local branch if it exists, same like `git checkout <branchname>`.
 Example: `gco feature/add_login`
-**gco \<keyword>**
+**gco \<keyword>**  
 If you have a lot of branches, the list `gco` provides can become pretty long and it can become tedious to search for the right branch. So if you know a keyword, for example it was a branch containing the text `login`, you can just write `gco login` and it will list all available branches which contain the word `login`, or if there's only 1 hit, ask you if you want to checkout that one.
 Example: 
 ```
