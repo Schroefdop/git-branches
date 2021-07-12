@@ -23,7 +23,7 @@ exec zsh
 After you installed the plugin and restarted your shell there are three commands you can use:
 
 **gco**\
-Will list all local available branches for checkout. Choose a number from the list to checkout that branch.
+Will list all local available branches for checkout. Choose a number from the list to checkout that branch.\
 
 **gco \<branchname>**\
 This command will immediately checkout the local branch if it exists, same like `git checkout <branchname>`.

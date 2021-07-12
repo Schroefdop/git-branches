@@ -16,37 +16,25 @@ trap "{ rm -f $branchesFile; }" EXIT
 # git merge
 gm() {
     _ACTION="merge"
-
-    if [ -z "$1" ]; then
-        _retrieveBranches $_ACTION
-    elif; then
-        if ! git merge --no-ff $1; then
-            _checkIfKeywordExists $1 $_ACTION
-        fi
-    fi
+    _showListOrHandleUserInputForAction $_ACTION $1
 }
 
 # git checkout
 gco() {
     _ACTION="checkout"
-    
-    if [ -z "$1" ]; then
-        _retrieveBranches $_ACTION
-    elif; then
-        if ! git checkout $1; then
-            _checkIfKeywordExists $1 $_ACTION
-        fi
-    fi
+    _showListOrHandleUserInputForAction $_ACTION $1
 }
 
 # git branch -d
 gbd() {
-    _retrieveBranches "deletion"
+    _ACTION="deletion"
+    _showListOrHandleUserInputForAction $_ACTION $1
 }
 
 # git checkout -t
 gcor() {
-    _retrieveBranches "remote checkout"
+    _ACTION="remote checkout"
+    _showListOrHandleUserInputForAction $_ACTION $1
 }
 
 _retrieveBranches() {
@@ -71,12 +59,12 @@ _retrieveBranches() {
     _validateInput 'Branch number: '
     branch=$(head -$_INPUT $branchesFile | tail -1 | awk '{$1=$1};1')
 
-    _handleActionForBranch $_ACTION $branch
+    _handleActionWithBranch $_ACTION $branch
 }
 
-_checkIfKeywordExists() {
-    _KEYWORD=$1
-    _ACTION=$2
+_handleActionForUserInput() {
+    _ACTION=$1
+    _KEYWORD=$2
 
     grepBranches=$TMPDIR'grepBranches'
     trap "{ rm -f $grepBranches; }" EXIT
@@ -98,10 +86,7 @@ _checkIfKeywordExists() {
         printf "Did you mean ${GREEN}$line${NOCOLOR}? [y/n]${NOCOLOR} "
         read confirm
         case $confirm in
-        [Yy]*) _handleActionForBranch $_ACTION $line ;;
-            # git checkout $line
-            # return
-            # ;;
+        [Yy]*) _handleActionWithBranch $_ACTION $line ;;
         *) return ;;
         esac
         ;;
@@ -112,7 +97,7 @@ _checkIfKeywordExists() {
         _listBranchesFromFile $grepBranches
         _validateInput 'Branch number: '
         branch=$(awk -v "line=$_INPUT" 'NR==line' $grepBranches | awk '{$1=$1};1')
-        git checkout $branch
+        _handleActionWithBranch $_ACTION $branch
         ;;
     esac
 }
@@ -164,7 +149,35 @@ _validateInput() {
     done
 }
 
-_handleActionForBranch() {   
+_handleActionForUserInput() {
+    _ACTION=$1
+    _USER_INPUT=$2
+
+    case $_ACTION in
+    "merge") 
+        if ! git merge --no-ff $_USER_INPUT; then
+            _handleActionForUserInput $_ACTION $_USER_INPUT
+        fi
+    ;;
+    "remote checkout") 
+    if ! git checkout -t $_USER_INPUT; then
+            _handleActionForUserInput $_ACTION $_USER_INPUT
+        fi
+    ;;
+    "checkout") 
+    if ! git checkout $_USER_INPUT; then
+            _handleActionForUserInput $_ACTION $_USER_INPUT
+        fi
+    ;;
+    "deletion")
+    if ! git branch -D $_USER_INPUT; then
+            _handleActionForUserInput $_ACTION $_USER_INPUT
+        fi
+    ;;
+    esac
+}
+
+_handleActionWithBranch() {   
     _ACTION=$1
     _BRANCH=$2
 
@@ -182,4 +195,15 @@ _handleActionForBranch() {
         esac
         ;;
     esac
+}
+
+_showListOrHandleUserInputForAction() {
+    _ACTION=$1
+    _USER_INPUT=$2
+
+    if [ -z "$_USER_INPUT" ]; then
+        _retrieveBranches $_ACTION
+    elif; then
+        _handleActionForUserInput $_ACTION $_USER_INPUT
+    fi
 }
