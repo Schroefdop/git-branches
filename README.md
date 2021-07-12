@@ -31,6 +31,7 @@ Example:
 > gco feature/add_login
 > Switched to branch 'feature/add_login'
 ```
+
 **gco \<keyword>**\
 If you have a lot of branches, the list `gco` provides can become pretty long and it can become tedious to search for the right branch. So if you know a keyword, for example it was a branch containing the text `login`, you can just write `gco login` and it will list all available branches which contain the word `login`, or if there's only 1 hit, ask you if you want to checkout that one.
 Example: 
