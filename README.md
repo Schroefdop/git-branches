@@ -1,15 +1,15 @@
 # git-branches
 
+Are you tired of copy pasting long branch names to just check it out? Me too! That's why I made this `oh-my-zsh` plugin. This plugin lists all the local/remote branches you have prepended with a number and you just have to type the corresponding number to switch to the branch! 🕺🏻
+
+![](https://media.giphy.com/media/jVT7YO7XwLfhCkMWxt/giphy.gif)
+
 - [git-branches](#git-branches)
   - [How to install](#how-to-install)
     - [Prerequisites](#prerequisites)
     - [Installation](#installation)
   - [How to use](#how-to-use)
     - [Features](#features)
-
-Are you tired of copy pasting long branch names to just check it out? Me too! That's why I made this `oh-my-zsh` plugin. This plugin lists all the local/remote branches you have prepended with a number and you just have to type the corresponding number to switch to the branch! 🕺🏻
-
-![](https://media.giphy.com/media/jVT7YO7XwLfhCkMWxt/giphy.gif)
 
 ## How to install
 ### Prerequisites
