@@ -37,9 +37,20 @@ gcor() {
     _showListOrHandleUserInputForAction $_ACTION $1
 }
 
-_retrieveBranches() {
+_showListOrHandleUserInputForAction() {
     _ACTION=$1
-    
+    _USER_INPUT=$2
+
+    if [ -z "$_USER_INPUT" ]; then
+        _presentBranchList $_ACTION
+    elif; then
+        _handleActionWithUserInput $_ACTION $_USER_INPUT
+    fi
+}
+
+_presentBranchList() {
+    _ACTION=$1
+
     local NOCOLOR='\033[0m'
     local RED='\033[0;31m'
     local GREEN='\033[0;32m'
@@ -52,7 +63,7 @@ _retrieveBranches() {
     currentBranch=$(git branch | grep \* | cut -d ' ' -f2)
     echo "Current branch:\n${GREEN}$currentBranch${NOCOLOR}"
     _removeCurrentBranchFromList
-    
+
     echo "Branches available for $_ACTION:"
     _listBranchesFromFile $branchesFile
 
@@ -62,7 +73,7 @@ _retrieveBranches() {
     _handleActionWithBranch $_ACTION $branch
 }
 
-_handleActionForUserInput() {
+_handleActionWithKeyword() {
     _ACTION=$1
     _KEYWORD=$2
 
@@ -78,10 +89,10 @@ _handleActionForUserInput() {
 
     case $hitCount in
     # If 0 results, return
-    0) return ;; 
+    0) return ;;
 
     # If 1 result, give option to switch
-    1) 
+    1)
         line=($(grep -i "$_KEYWORD" $grepBranches))
         printf "Did you mean ${GREEN}$line${NOCOLOR}? [y/n]${NOCOLOR} "
         read confirm
@@ -92,7 +103,7 @@ _handleActionForUserInput() {
         ;;
 
     # If multiple results, let the user choose
-    *) 
+    *)
         echo "Found branches with keyword '$_KEYWORD'"
         _listBranchesFromFile $grepBranches
         _validateInput 'Branch number: '
@@ -149,35 +160,35 @@ _validateInput() {
     done
 }
 
-_handleActionForUserInput() {
+_handleActionWithUserInput() {
     _ACTION=$1
     _USER_INPUT=$2
 
     case $_ACTION in
-    "merge") 
+    "merge")
         if ! git merge --no-ff $_USER_INPUT; then
-            _handleActionForUserInput $_ACTION $_USER_INPUT
+            _handleActionWithKeyword $_ACTION $_USER_INPUT
         fi
-    ;;
-    "remote checkout") 
-    if ! git checkout -t $_USER_INPUT; then
-            _handleActionForUserInput $_ACTION $_USER_INPUT
+        ;;
+    "remote checkout")
+        if ! git checkout -t $_USER_INPUT; then
+            _handleActionWithKeyword $_ACTION $_USER_INPUT
         fi
-    ;;
-    "checkout") 
-    if ! git checkout $_USER_INPUT; then
-            _handleActionForUserInput $_ACTION $_USER_INPUT
+        ;;
+    "checkout")
+        if ! git checkout $_USER_INPUT; then
+            _handleActionWithKeyword $_ACTION $_USER_INPUT
         fi
-    ;;
+        ;;
     "deletion")
-    if ! git branch -D $_USER_INPUT; then
-            _handleActionForUserInput $_ACTION $_USER_INPUT
+        if ! git branch -D $_USER_INPUT; then
+            _handleActionWithKeyword $_ACTION $_USER_INPUT
         fi
-    ;;
+        ;;
     esac
 }
 
-_handleActionWithBranch() {   
+_handleActionWithBranch() {
     _ACTION=$1
     _BRANCH=$2
 
@@ -195,15 +206,4 @@ _handleActionWithBranch() {
         esac
         ;;
     esac
-}
-
-_showListOrHandleUserInputForAction() {
-    _ACTION=$1
-    _USER_INPUT=$2
-
-    if [ -z "$_USER_INPUT" ]; then
-        _retrieveBranches $_ACTION
-    elif; then
-        _handleActionForUserInput $_ACTION $_USER_INPUT
-    fi
 }
