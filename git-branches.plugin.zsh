@@ -73,10 +73,10 @@ _presentBranchList() {
 _addBranchesToFileForAction() {
     _ACTION=$1
 
- case $_ACTION in
+    case $_ACTION in
     "remote checkout") git branch -r >$branchesFile ;; # Get remote branches
     *) git branch >$branchesFile ;;                    # Get local branches
-    esac   
+    esac
 }
 
 _handleActionWithKeyword() {
