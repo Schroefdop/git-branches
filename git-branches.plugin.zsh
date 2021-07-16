@@ -131,13 +131,15 @@ _removeCurrentBranchFromList() {
 }
 
 _listBranchesFromFile() {
+    FILE=$1
+
     n=1
     while read line; do
         if [[ $line != *"*"* ]]; then
             echo "$n. ${RED}$line${NOCOLOR}"
             n=$((n + 1))
         fi
-    done <$1
+    done <$FILE
 }
 
 _validateInput() {
@@ -145,16 +147,13 @@ _validateInput() {
     local RED='\033[0;31m'
 
     while true; do
-        #
+        
         # Read user input
-        #
         printf $1
         read tmp
 
-        #
         # If input is not an integer or if input is out of range, throw an error
         # Ask for input again
-        #
         if [[ ! $tmp =~ ^[0-9]+$ ]]; then
             echo "${RED}Invalid input${NOCOLOR}"
         elif [[ "$tmp" -lt "1" ]] || [[ "$tmp" -gt $((n - 1)) ]]; then
