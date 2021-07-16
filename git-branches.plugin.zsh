@@ -13,28 +13,29 @@ _INPUT=
 branchesFile=$TMPDIR'branches'
 trap "{ rm -f $branchesFile; }" EXIT
 
+_ACTION_MERGE="merge"
+_ACTION_CHECKOUT="checkout"
+_ACTION_DELETE="deletion"
+_ACTION_REMOTE_CHECKOUT="remote checkout"
+
 # git merge
 gm() {
-    _ACTION="merge"
-    _showListOrHandleUserInputForAction $_ACTION $1
+    _showListOrHandleUserInputForAction $_ACTION_MERGE $1
 }
 
 # git checkout
 gco() {
-    _ACTION="checkout"
-    _showListOrHandleUserInputForAction $_ACTION $1
+    _showListOrHandleUserInputForAction $_ACTION_CHECKOUT $1
 }
 
 # git branch -d
 gbd() {
-    _ACTION="deletion"
-    _showListOrHandleUserInputForAction $_ACTION $1
+    _showListOrHandleUserInputForAction $_ACTION_DELETE $1
 }
 
 # git checkout -t
 gcor() {
-    _ACTION="remote checkout"
-    _showListOrHandleUserInputForAction $_ACTION $1
+    _showListOrHandleUserInputForAction $_ACTION_REMOTE_CHECKOUT $1
 }
 
 _showListOrHandleUserInputForAction() {
@@ -170,22 +171,22 @@ _handleActionWithUserInput() {
     _USER_INPUT=$2
 
     case $_ACTION in
-    "merge")
+    $_ACTION_MERGE)
         if ! git merge --no-ff $_USER_INPUT; then
             _handleActionWithKeyword $_ACTION $_USER_INPUT
         fi
         ;;
-    "remote checkout")
+    $_ACTION_REMOTE_CHECKOUT)
         if ! git checkout -t $_USER_INPUT; then
             _handleActionWithKeyword $_ACTION $_USER_INPUT
         fi
         ;;
-    "checkout")
+    $_ACTION_CHECKOUT)
         if ! git checkout $_USER_INPUT; then
             _handleActionWithKeyword $_ACTION $_USER_INPUT
         fi
         ;;
-    "deletion")
+    $_ACTION_DELETE)
         if ! git branch -D $_USER_INPUT; then
             _handleActionWithKeyword $_ACTION $_USER_INPUT
         fi
@@ -198,10 +199,10 @@ _handleActionWithBranch() {
     _BRANCH=$2
 
     case $_ACTION in
-    "merge") git merge --no-ff $_BRANCH ;;
-    "remote checkout") git checkout -t $_BRANCH ;;
-    "checkout") git checkout $_BRANCH ;;
-    "deletion")
+    $_ACTION_MERGE) git merge --no-ff $_BRANCH ;;
+    $_ACTION_REMOTE_CHECKOUT) git checkout -t $_BRANCH ;;
+    $_ACTION_CHECKOUT) git checkout $_BRANCH ;;
+    $_ACTION_DELETE)
         printf "${RED}Are you sure you want to delete branch ${NOCOLOR}$_BRANCH${RED}? [y/n]${NOCOLOR} "
 
         read confirm
