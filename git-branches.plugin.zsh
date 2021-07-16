@@ -55,10 +55,7 @@ _presentBranchList() {
     local RED='\033[0;31m'
     local GREEN='\033[0;32m'
 
-    case $_ACTION in
-    "remote checkout") git branch -r >$branchesFile ;; # Get remote branches
-    *) git branch >$branchesFile ;;                    # Get local branches
-    esac
+    _addBranchesToFileForAction $_ACTION
 
     currentBranch=$(git branch | grep \* | cut -d ' ' -f2)
     echo "Current branch:\n${GREEN}$currentBranch${NOCOLOR}"
@@ -73,6 +70,15 @@ _presentBranchList() {
     _handleActionWithBranch $_ACTION $branch
 }
 
+_addBranchesToFileForAction() {
+    _ACTION=$1
+
+ case $_ACTION in
+    "remote checkout") git branch -r >$branchesFile ;; # Get remote branches
+    *) git branch >$branchesFile ;;                    # Get local branches
+    esac   
+}
+
 _handleActionWithKeyword() {
     _ACTION=$1
     _KEYWORD=$2
@@ -80,8 +86,7 @@ _handleActionWithKeyword() {
     grepBranches=$TMPDIR'grepBranches'
     trap "{ rm -f $grepBranches; }" EXIT
 
-    git branch >$branchesFile
-
+    _addBranchesToFileForAction $_ACTION
     _removeCurrentBranchFromList
 
     hitCount=$(grep -c $_KEYWORD $branchesFile)
