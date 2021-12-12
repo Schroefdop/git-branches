@@ -52,14 +52,10 @@ _showListOrHandleUserInputForAction() {
 _presentBranchList() {
     _ACTION=$1
 
-    local NOCOLOR='\033[0m'
-    local RED='\033[0;31m'
-    local GREEN='\033[0;32m'
-
     _addBranchesToFileForAction $_ACTION
 
     currentBranch=$(git branch | grep \* | cut -d ' ' -f2)
-    echo "Current branch:\n${GREEN}$currentBranch${NOCOLOR}"
+    echo "Current branch:\n$fg[green]$currentBranch$reset_color"
     _removeCurrentBranchFromList
 
     echo "Branches available for $_ACTION:"
@@ -100,13 +96,12 @@ _handleActionWithKeyword() {
     # If 1 result, give option to switch
     1)
         line=($(grep -i "$_KEYWORD" $grepBranches))
-        printf "Did you mean ${GREEN}$line${NOCOLOR}? [y/n]${NOCOLOR} "
-        read confirm
-        case $confirm in
-        [Yy]*) _handleActionWithBranch $_ACTION $line ;;
-        *) return ;;
-        esac
-        ;;
+
+        if read -q "choice?Did you mean $fg[green]$line$reset_color? [y/n] "; then
+            echo
+            _handleActionWithBranch $_ACTION $line
+        fi
+    ;;
 
     # If multiple results, let the user choose
     *)
@@ -136,16 +131,13 @@ _listBranchesFromFile() {
     n=1
     while read line; do
         if [[ $line != *"*"* ]]; then
-            echo "$n. ${RED}$line${NOCOLOR}"
+            echo "$n. $fg[red]$line$reset_color"
             n=$((n + 1))
         fi
     done <$FILE
 }
 
 _validateInput() {
-    local NOCOLOR='\033[0m'
-    local RED='\033[0;31m'
-
     while true; do
         
         # Read user input
@@ -155,9 +147,9 @@ _validateInput() {
         # If input is not an integer or if input is out of range, throw an error
         # Ask for input again
         if [[ ! $tmp =~ ^[0-9]+$ ]]; then
-            echo "${RED}Invalid input${NOCOLOR}"
+            echo "$fg[red]Invalid input$reset_color"
         elif [[ "$tmp" -lt "1" ]] || [[ "$tmp" -gt $((n - 1)) ]]; then
-            echo "${RED}Input out of range ${NOCOLOR}"
+            echo "$fg[red]Input out of range $reset_color"
         else
             _INPUT=$tmp
             break
@@ -202,13 +194,9 @@ _handleActionWithBranch() {
     $_ACTION_REMOTE_CHECKOUT) git checkout -t $_BRANCH ;;
     $_ACTION_CHECKOUT) git checkout $_BRANCH ;;
     $_ACTION_DELETE)
-        printf "${RED}Are you sure you want to delete branch ${NOCOLOR}$_BRANCH${RED}? [y/n]${NOCOLOR} "
-
-        read confirm
-        case "$confirm" in
-        [yY]) git branch -D $_BRANCH ;;
-        *) echo "¯\_(ツ)_/¯" ;;
-        esac
-        ;;
+        if read -q "choice?$fg[red]Are you sure you want to delete branch $reset_color$_BRANCH$fg[red]? [y/n]$reset_color "; then
+            echo
+            git branch -D $_BRANCH
+        fi
     esac
 }
