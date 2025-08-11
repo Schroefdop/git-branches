@@ -86,8 +86,8 @@ _handleActionWithKeyword() {
     _addBranchesToFileForAction $_ACTION
     _removeCurrentBranchFromList
 
-    hitCount=$(grep -c $_KEYWORD $branchesFile)
-    grep $_KEYWORD $branchesFile >$grepBranches
+    hitCount=$(grep -i -c $_KEYWORD $branchesFile)
+    grep -i $_KEYWORD $branchesFile >$grepBranches
 
     case $hitCount in
     # If 0 results, return
@@ -189,14 +189,35 @@ _handleActionWithBranch() {
     _ACTION=$1
     _BRANCH=$2
 
+    # Trim leading '+' if branch is in another worktree
+    _BRANCH="${_BRANCH##+([[:space:]]|+)}"
+
     case $_ACTION in
     $_ACTION_MERGE) git merge --no-ff $_BRANCH ;;
     $_ACTION_REMOTE_CHECKOUT) git checkout -t $_BRANCH ;;
-    $_ACTION_CHECKOUT) git checkout $_BRANCH ;;
+    $_ACTION_CHECKOUT) _handleCheckout $_BRANCH ;;
     $_ACTION_DELETE)
         if read -q "choice?$fg[red]Are you sure you want to delete branch $reset_color$_BRANCH$fg[red]? [y/n]$reset_color "; then
             echo
             git branch -D $_BRANCH
         fi
     esac
+}
+
+_handleCheckout() { 
+    _BRANCH=$1
+
+    local worktree_path
+    worktree_path=$(git worktree list --porcelain | awk -v b="refs/heads/${_BRANCH}" '
+        $1 == "worktree" { path=$2 }
+        $1 == "branch" && $2 == b { print path }
+    ')
+
+    if [[ -n "$worktree_path" ]]; then
+        worktree_name=$(basename "$worktree_path")
+        echo "Checked out $fg[green]$_BRANCH$reset_color at worktree: $fg[green]$worktree_name$reset_color"
+        cd "$worktree_path" || return 1
+    else
+        git checkout "$_BRANCH"
+    fi
 }
