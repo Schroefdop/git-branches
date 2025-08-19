@@ -99,7 +99,7 @@ _handleActionWithKeyword() {
 
         if read -q "choice?Did you mean $fg[green]$line$reset_color? [y/n] "; then
             echo
-            _handleActionWithBranch $_ACTION $line
+            _handleActionWithBranch $_ACTION "$line"
         fi
     ;;
 
